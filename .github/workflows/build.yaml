@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [nikolaik/official-node]
   schedule:
     - cron: "0 00,12 * * *"  # Twice a day
 
@@ -64,10 +64,10 @@ jobs:
           context: .
           file: dockerfiles/${{ matrix.key }}.Dockerfile
           load: true
-          tags: nikolaik/python-nodejs:${{ matrix.key }}
+          tags: nikolaik/python-nodejs:${{ matrix.key }}-canary
       - name: Run smoke tests
         run: |
-          docker run --rm nikolaik/python-nodejs:${{ matrix.key }} sh -c "node --version && npm --version && yarn --version && python --version && pip --version && pipenv --version && poetry --version"
+          docker run --rm nikolaik/python-nodejs:${{ matrix.key }}-canary sh -c "node --version && npm --version && yarn --version && python --version && pip --version && pipenv --version && poetry --version"
       - name: Push image
         uses: docker/build-push-action@v4
         with:
@@ -75,7 +75,7 @@ jobs:
           file: dockerfiles/${{ matrix.key }}.Dockerfile
           platforms: ${{ join(matrix.platforms) }}
           push: true
-          tags: nikolaik/python-nodejs:${{ matrix.key }}
+          tags: nikolaik/python-nodejs:${{ matrix.key }}-canary
 
   release:
     name: Update versions.json and README.md
